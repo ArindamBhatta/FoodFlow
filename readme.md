@@ -16,6 +16,21 @@ This project implements a robust backend for managing food orders, vendors, and 
 - **Centralized Response Engine**: A unified `callService` middleware handles all success/error responses consistently across the API.
 - **Role-Based Access Control (RBAC)**: Secure middleware protecting routes based on persona permissions.
 
+```mermaid
+flowchart LR
+    A[Client / External Request] --> B[Controller + DTO]
+    B --> C[Service]
+    C --> D[Repository + DAO]
+    D --> E[Entity / Model]
+    E --> F[(Database)]
+```
+
+- Controller + DTO handle incoming requests and response shape.
+- Service contains the business logic.
+- Repository + DAO communicate with the database.
+- Entity stores the core domain model that is persisted.
+
+
 ## 🛠 Tech Stack
 
 - **Runtime**: Node.js & TypeScript
@@ -91,5 +106,11 @@ src/
 │   └── daos/         # Physical data access objects
 └── index.ts          # Application entry point
 ```
+
+## 🧭 Architecture Overview
+
+A simple diagram to explain the flow of the app:
+
+
 
 
