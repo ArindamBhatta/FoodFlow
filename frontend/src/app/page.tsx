@@ -1,11 +1,14 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
 import { ShoppingBag, Utensils, ShieldCheck, Store } from "lucide-react";
 
 export default function Home() {
+  const router = useRouter();
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
@@ -19,6 +22,16 @@ export default function Home() {
         </div>
 
         <div style={styles.navActions}>
+          <Link href="/admin" style={styles.navLink}>
+            <ShieldCheck size={18} color="#805AD5" />
+            <span>Admin Portal</span>
+          </Link>
+
+          <Link href="/vendor" style={styles.navLink}>
+            <Store size={18} color="#319795" />
+            <span>Vendor Portal</span>
+          </Link>
+
           <button style={styles.cartBtn}>
             <ShoppingBag size={20} />
             <span>Cart</span>
@@ -46,16 +59,26 @@ export default function Home() {
             <p>Browse vendors, view menus, add items to Redux cart, and place orders.</p>
           </div>
 
-          <div style={styles.card}>
+          <div
+            onClick={() => router.push("/vendor")}
+            style={{ ...styles.card, cursor: "pointer" }}
+          >
             <Store size={32} style={{ color: "#319795" }} />
-            <h3>Vendor Dashboard</h3>
-            <p>Manage food items, upload menu images, and track active incoming orders.</p>
+            <h3 style={{ color: "#F8FAFC" }}>Vendor Dashboard →</h3>
+            <p style={{ color: "#94A3B8" }}>
+              Log in to edit shop details, phone, address, and manage food items.
+            </p>
           </div>
 
-          <div style={styles.card}>
+          <div
+            onClick={() => router.push("/admin")}
+            style={{ ...styles.card, cursor: "pointer" }}
+          >
             <ShieldCheck size={32} style={{ color: "#805AD5" }} />
-            <h3>Admin Management</h3>
-            <p>Unified identity base (`Person`) managing customer & vendor role permissions.</p>
+            <h3 style={{ color: "#F8FAFC" }}>Admin Management →</h3>
+            <p style={{ color: "#94A3B8" }}>
+              Log in as Admin to create and onboard new restaurant vendors.
+            </p>
           </div>
         </div>
       </main>
@@ -90,7 +113,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   navActions: {
     display: "flex",
     alignItems: "center",
-    gap: "1rem",
+    gap: "1.25rem",
+  },
+  navLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.4rem",
+    color: "#CBD5E1",
+    textDecoration: "none",
+    fontSize: "0.95rem",
+    fontWeight: "500",
   },
   cartBtn: {
     position: "relative",
@@ -146,5 +178,6 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     flexDirection: "column",
     gap: "1rem",
+    height: "100%",
   },
 };

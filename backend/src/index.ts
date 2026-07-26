@@ -3,7 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import express from "express";
 import apiRouter from "./api";
-import connectDB, { db } from "./infrastructure/database/connection";
+import connectDB from "./infrastructure/database/connection";
 import logger from "./infrastructure/logger/winston";
 
 // Load environment variables
@@ -11,10 +11,17 @@ dotenv.config();
 
 // Initialize Express
 const app = express();
-const port = process.env.PORT || 8001;
+const port = process.env.PORT || 8111;
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://127.0.0.1:3000"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 

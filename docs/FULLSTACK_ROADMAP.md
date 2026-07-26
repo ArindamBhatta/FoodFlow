@@ -68,10 +68,4 @@ To make this a complete, high-performance **Full-Stack Application**, we integra
 
 ---
 
-## 🚀 28-Day Execution Tracker
 
-- [x] **Week 0:** Backend Clean Architecture & SQLite Setup.
-- [ ] **Week 1:** Next.js Foundation + TanStack Query & Redux setup + Auth screens.
-- [ ] **Week 2:** Customer Menu + Vendor Listing + Interactive Redux Shopping Cart.
-- [ ] **Week 3:** Checkout flow + Vendor Product & Order Management Dashboard.
-- [ ] **Week 4:** UI Micro-animations + End-to-End Testing + Demo Polish.
