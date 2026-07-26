@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { Store, Lock, User, Edit3, Image, Phone, MapPin, CheckCircle } from "lucide-react";
+import { Store, Lock, Edit3, Loader2, LogOut, CheckCircle } from "lucide-react";
 
 export default function VendorPortal() {
   const router = useRouter();
@@ -50,7 +50,7 @@ export default function VendorPortal() {
   });
 
   // 2. Fetch Vendor Profile details
-  const { data: vendorProfile, isLoading: profileLoading } = useQuery({
+  const { isLoading: profileLoading } = useQuery({
     queryKey: ["vendorProfile", token],
     queryFn: async () => {
       const res = await api.get("/get-vendor-profile", {
@@ -103,135 +103,174 @@ export default function VendorPortal() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="min-h-screen bg-slate-900 text-slate-100 p-8 font-sans">
       {/* Header */}
-      <header style={styles.header}>
-        <div style={{ ...styles.brand, cursor: "pointer" }} onClick={() => router.push("/")}>
-          <Store color="#319795" size={32} />
-          <h2>Vendor Portal</h2>
+      <header className="flex justify-between items-center pb-4 mb-10 border-b border-slate-800">
+        <div
+          onClick={() => router.push("/")}
+          className="flex items-center gap-3 cursor-pointer group"
+        >
+          <Store className="text-teal-400 group-hover:scale-105 transition-transform" size={32} />
+          <h2 className="text-2xl font-bold tracking-tight text-white">Vendor Portal</h2>
         </div>
         {token && (
-          <button onClick={handleLogout} style={styles.logoutBtn}>
-            Logout Vendor
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+          >
+            <LogOut size={18} />
+            <span>Logout Vendor</span>
           </button>
         )}
       </header>
 
       {!token ? (
-        /* Login Screen */
-        <div style={styles.authCard}>
-          <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-            <Lock size={40} color="#319795" />
-            <h3 style={{ marginTop: "0.5rem" }}>Vendor Login</h3>
-            <p style={{ color: "#94A3B8", fontSize: "0.9rem" }}>Log in to manage your shop profile & food catalog</p>
+        /* Login Card */
+        <div className="max-w-md mx-auto bg-slate-800/80 backdrop-blur-md border border-slate-700/60 rounded-2xl p-8 shadow-xl">
+          <div className="text-center mb-6">
+            <div className="inline-flex p-3 bg-teal-500/10 rounded-full mb-3">
+              <Lock className="text-teal-400" size={36} />
+            </div>
+            <h3 className="text-xl font-bold text-white">Vendor Portal Access</h3>
+            <p className="text-slate-400 text-sm mt-1">Log in to manage your shop profile & catalog</p>
           </div>
 
-          {authError && <div style={styles.errorAlert}>{authError}</div>}
+          {authError && (
+            <div className="bg-red-900/40 border border-red-500/50 text-red-200 text-sm p-3 rounded-lg mb-4">
+              {authError}
+            </div>
+          )}
 
-          <div style={styles.formGroup}>
-            <label>Vendor Email</label>
-            <input
-              type="email"
-              placeholder="vendor@restaurant.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              style={styles.input}
-            />
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                Vendor Email
+              </label>
+              <input
+                type="email"
+                placeholder="vendor@restaurant.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500 transition-colors"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500 transition-colors"
+              />
+            </div>
+
+            <button
+              onClick={() => loginMutation.mutate()}
+              disabled={loginMutation.isPending}
+              className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2 mt-2"
+            >
+              {loginMutation.isPending && <Loader2 className="animate-spin" size={18} />}
+              <span>{loginMutation.isPending ? "Authenticating..." : "Login as Vendor"}</span>
+            </button>
           </div>
-
-          <div style={styles.formGroup}>
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              style={styles.input}
-            />
-          </div>
-
-          <button
-            onClick={() => loginMutation.mutate()}
-            disabled={loginMutation.isPending}
-            style={{ ...styles.primaryBtn, backgroundColor: "#319795" }}
-          >
-            {loginMutation.isPending ? "Authenticating..." : "Login as Vendor"}
-          </button>
         </div>
       ) : (
         /* Vendor Profile Dashboard */
-        <div style={styles.dashboardContainer}>
-          <div style={styles.card}>
-            <div style={styles.cardHeader}>
-              <Edit3 color="#319795" size={24} />
-              <h3>Manage Restaurant Profile</h3>
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-8 shadow-xl">
+            <div className="flex items-center gap-3 mb-6 pb-3 border-b border-slate-700/60">
+              <Edit3 className="text-teal-400" size={24} />
+              <h3 className="text-xl font-bold text-white">Manage Restaurant Profile</h3>
             </div>
 
             {profileLoading ? (
-              <p style={{ color: "#94A3B8" }}>Loading profile details...</p>
+              <div className="flex items-center gap-2 text-slate-400">
+                <Loader2 className="animate-spin" size={18} />
+                <span>Loading profile details...</span>
+              </div>
             ) : (
-              <>
-                {updateMsg && <div style={styles.successAlert}>{updateMsg}</div>}
+              <div className="space-y-6">
+                {updateMsg && (
+                  <div className="bg-emerald-900/40 border border-emerald-500/50 text-emerald-200 text-sm p-3 rounded-lg flex items-center gap-2">
+                    <CheckCircle size={18} className="text-emerald-400" />
+                    <span>{updateMsg}</span>
+                  </div>
+                )}
 
-                <div style={styles.formGrid}>
-                  <div style={styles.formGroup}>
-                    <label>Restaurant / Shop Name</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                      Shop / Restaurant Name
+                    </label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      style={styles.input}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
-                  <div style={styles.formGroup}>
-                    <label>Owner Name</label>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                      Owner Name
+                    </label>
                     <input
                       type="text"
                       value={ownerName}
                       onChange={(e) => setOwnerName(e.target.value)}
-                      style={styles.input}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
-                  <div style={styles.formGroup}>
-                    <label>Phone Number</label>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                      Phone Number
+                    </label>
                     <input
                       type="text"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      style={styles.input}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                     />
                   </div>
 
-                  <div style={styles.formGroup}>
-                    <label>Pincode</label>
+                  <div>
+                    <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                      Pincode
+                    </label>
                     <input
                       type="text"
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value)}
-                      style={styles.input}
+                      className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                     />
                   </div>
                 </div>
 
-                <div style={styles.formGroup}>
-                  <label>Restaurant Address</label>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                    Restaurant Address
+                  </label>
                   <textarea
                     value={address}
                     onChange={(e) => setAddress(e.target.value)}
-                    style={{ ...styles.input, height: "90px", resize: "none" }}
+                    className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500 h-24 resize-none"
                   />
                 </div>
 
                 <button
                   onClick={() => updateProfileMutation.mutate()}
                   disabled={updateProfileMutation.isPending}
-                  style={{ ...styles.primaryBtn, backgroundColor: "#319795" }}
+                  className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
                 >
-                  {updateProfileMutation.isPending ? "Updating Profile..." : "Save Profile Changes"}
+                  {updateProfileMutation.isPending && <Loader2 className="animate-spin" size={18} />}
+                  <span>{updateProfileMutation.isPending ? "Updating Profile..." : "Save Profile Changes"}</span>
                 </button>
-              </>
+              </div>
             )}
           </div>
         </div>
@@ -239,106 +278,3 @@ export default function VendorPortal() {
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    minHeight: "100vh",
-    backgroundColor: "#0F172A",
-    color: "#F8FAFC",
-    fontFamily: "var(--font-geist-sans), sans-serif",
-    padding: "2rem",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "2.5rem",
-    paddingBottom: "1rem",
-    borderBottom: "1px solid #1E293B",
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-  },
-  logoutBtn: {
-    backgroundColor: "#DC2626",
-    color: "#FFF",
-    border: "none",
-    padding: "0.5rem 1rem",
-    borderRadius: "0.5rem",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-  authCard: {
-    maxWidth: "420px",
-    margin: "4rem auto",
-    backgroundColor: "#1E293B",
-    border: "1px solid #334155",
-    borderRadius: "1rem",
-    padding: "2.5rem",
-  },
-  dashboardContainer: {
-    maxWidth: "700px",
-    margin: "0 auto",
-  },
-  card: {
-    backgroundColor: "#1E293B",
-    border: "1px solid #334155",
-    borderRadius: "1rem",
-    padding: "2rem",
-  },
-  cardHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-    marginBottom: "1.5rem",
-  },
-  formGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "1rem",
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.4rem",
-    marginBottom: "1rem",
-  },
-  input: {
-    backgroundColor: "#0F172A",
-    border: "1px solid #334155",
-    color: "#F8FAFC",
-    borderRadius: "0.5rem",
-    padding: "0.75rem",
-    fontSize: "0.9rem",
-    outline: "none",
-  },
-  primaryBtn: {
-    width: "100%",
-    backgroundColor: "#319795",
-    color: "#FFF",
-    border: "none",
-    padding: "0.85rem",
-    borderRadius: "0.5rem",
-    fontWeight: "600",
-    cursor: "pointer",
-    marginTop: "0.5rem",
-  },
-  errorAlert: {
-    backgroundColor: "#7F1D1D",
-    color: "#FECACA",
-    padding: "0.75rem",
-    borderRadius: "0.5rem",
-    marginBottom: "1rem",
-    fontSize: "0.85rem",
-  },
-  successAlert: {
-    backgroundColor: "#064E3B",
-    color: "#A7F3D0",
-    padding: "0.75rem",
-    borderRadius: "0.5rem",
-    marginBottom: "1rem",
-    fontSize: "0.85rem",
-  },
-};

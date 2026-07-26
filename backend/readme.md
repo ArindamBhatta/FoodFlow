@@ -1,12 +1,5 @@
-# Premium Food Order Management System
-
-A production-ready, modular, and highly maintainable backend for a multi-persona food delivery platform. Built with a focus on Clean Architecture, type safety, and centralized resource management.
-
-## 🚀 Overview
-
-This project implements a robust backend for managing food orders, vendors, and customers. It features a sophisticated three-persona system (Admin, Vendor, Customer) powered by a unified identity foundation.
-
 ### Key Architectural Highlights
+
 - **Unified Identity System**: Uses a shared `Person` entity for all personas, ensuring single-source logic for authentication, security, and credentials.
 - **Clean Layered Architecture**:
     - **Entities**: Domain models with encapsulated business logic.
@@ -49,34 +42,7 @@ The project uses a relational schema optimized for SQLite:
 - **Customer**: Profile data linked to a Person ID.
 - **Food/Cart**: Managed relationship for order fulfillment.
 
-## ⚙️ Setup & Installation
 
-### 1. Prerequisites
-- Node.js (v18+)
-- npm
-
-### 2. Environment Configuration
-Create a `.env` file in the root directory:
-```env
-PORT=8001
-API_SECRET=your_jwt_secret_key
-DATABASE_URL=sqlite.db
-```
-
-### 3. Installation
-```bash
-npm install
-```
-
-### 4. Database Synchronization
-Push the schema to your local SQLite database:
-```bash
-npm run db:push
-```
-
-### 5. Start Development Server
-```bash
-npm run dev
 ```
 
 ## 📜 Available Scripts
@@ -106,10 +72,6 @@ src/
 │   └── daos/         # Physical data access objects
 └── index.ts          # Application entry point
 ```
-
-## 🧭 Architecture Overview
-
-A simple diagram to explain the flow of the app:
 
 
 

@@ -4,6 +4,14 @@ A production-ready, modern **Full-Stack Food Delivery Platform** built with **Ne
 
 ---
 
+## 📱 Application Demo
+
+<p align="center">
+  <img src="./docs/assets/pic_1.png" width="1000%" alt="Demo 1" />
+</p>
+
+---
+
 ## 🏗️ Architecture Overview
 
 The repository is structured with dedicated frontend and backend directories:
@@ -86,13 +94,4 @@ npm run dev        # Starts client on http://localhost:3000
 
 ---
 
-## 📖 Documentation & Roadmap
 
-Detailed architectural diagrams and 28-day execution goals can be found in:
-- [`docs/FULLSTACK_ROADMAP.md`](./docs/FULLSTACK_ROADMAP.md)
-
----
-
-## 📜 License
-
-MIT License. Designed and built by [Arindam Bhatta](https://github.com/ArindamBhatta).

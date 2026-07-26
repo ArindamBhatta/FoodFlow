@@ -4,13 +4,13 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api";
-import { ShieldCheck, UserPlus, LogIn, Store, Lock, Mail, Phone, MapPin, User, UserCheck } from "lucide-react";
+import * as Tabs from "@radix-ui/react-tabs";
+import { ShieldCheck, UserPlus, Lock, Store, LogOut, Loader2 } from "lucide-react";
 
 export default function AdminPortal() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // Mode: "login" | "signup"
   const [authMode, setAuthMode] = useState<"login" | "signup">("login");
 
   // Token State
@@ -117,7 +117,6 @@ export default function AdminPortal() {
     },
     onSuccess: () => {
       setSuccessMsg(`Vendor "${name}" created successfully!`);
-      // Reset form
       setName("");
       setEmail("");
       setPassword("");
@@ -139,259 +138,312 @@ export default function AdminPortal() {
   };
 
   return (
-    <div style={styles.container}>
+    <div className="min-h-screen bg-slate-900 text-slate-100 p-8 font-sans">
       {/* Header */}
-      <header style={styles.header}>
-        <div style={{ ...styles.brand, cursor: "pointer" }} onClick={() => router.push("/")}>
-          <ShieldCheck color="#805AD5" size={32} />
-          <h2>Admin Portal</h2>
+      <header className="flex justify-between items-center pb-4 mb-10 border-b border-slate-800">
+        <div
+          onClick={() => router.push("/")}
+          className="flex items-center gap-3 cursor-pointer group"
+        >
+          <ShieldCheck className="text-purple-500 group-hover:scale-105 transition-transform" size={32} />
+          <h2 className="text-2xl font-bold tracking-tight text-white">Admin Portal</h2>
         </div>
         {token && (
-          <button onClick={handleLogout} style={styles.logoutBtn}>
-            Logout Admin
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors"
+          >
+            <LogOut size={18} />
+            <span>Logout Admin</span>
           </button>
         )}
       </header>
 
       {!token ? (
-        /* Login / Signup Auth Card */
-        <div style={styles.authCard}>
-          <div style={{ textAlign: "center", marginBottom: "1.5rem" }}>
-            <Lock size={40} color="#805AD5" />
-            <h3 style={{ marginTop: "0.5rem" }}>
-              {authMode === "login" ? "Admin Login" : "Create Admin Account"}
-            </h3>
-            <p style={{ color: "#94A3B8", fontSize: "0.9rem" }}>
-              {authMode === "login"
-                ? "Sign in to manage & onboard restaurant vendors"
-                : "Register a new System Administrator account"}
-            </p>
+        /* Radix UI Tabs for Auth */
+        <div className="max-w-md mx-auto bg-slate-800/80 backdrop-blur-md border border-slate-700/60 rounded-2xl p-8 shadow-xl">
+          <div className="text-center mb-6">
+            <div className="inline-flex p-3 bg-purple-500/10 rounded-full mb-3">
+              <Lock className="text-purple-400" size={36} />
+            </div>
+            <h3 className="text-xl font-bold text-white">Admin Access</h3>
+            <p className="text-slate-400 text-sm mt-1">Manage platform vendors and administrative controls</p>
           </div>
 
-          {/* Toggle Tabs */}
-          <div style={styles.tabContainer}>
-            <button
-              onClick={() => {
-                setAuthMode("login");
-                setAuthError("");
-              }}
-              style={{
-                ...styles.tabBtn,
-                borderBottom: authMode === "login" ? "2px solid #805AD5" : "none",
-                color: authMode === "login" ? "#F8FAFC" : "#94A3B8",
-              }}
-            >
-              Sign In
-            </button>
-            <button
-              onClick={() => {
-                setAuthMode("signup");
-                setAuthError("");
-              }}
-              style={{
-                ...styles.tabBtn,
-                borderBottom: authMode === "signup" ? "2px solid #805AD5" : "none",
-                color: authMode === "signup" ? "#F8FAFC" : "#94A3B8",
-              }}
-            >
-              Register Admin
-            </button>
-          </div>
+          <Tabs.Root value={authMode} onValueChange={(val) => setAuthMode(val as any)}>
+            <Tabs.List className="flex border-b border-slate-700 mb-6">
+              <Tabs.Trigger
+                value="login"
+                className="flex-1 py-2 text-sm font-medium text-slate-400 data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-purple-500 transition-colors"
+              >
+                Sign In
+              </Tabs.Trigger>
+              <Tabs.Trigger
+                value="signup"
+                className="flex-1 py-2 text-sm font-medium text-slate-400 data-[state=active]:text-white data-[state=active]:border-b-2 data-[state=active]:border-purple-500 transition-colors"
+              >
+                Register Admin
+              </Tabs.Trigger>
+            </Tabs.List>
 
-          {authError && <div style={styles.errorAlert}>{authError}</div>}
+            {authError && (
+              <div className="bg-red-900/40 border border-red-500/50 text-red-200 text-sm p-3 rounded-lg mb-4">
+                {authError}
+              </div>
+            )}
 
-          {authMode === "signup" && (
-            <>
-              <div style={styles.formGroup}>
-                <label>Full Name</label>
+            <Tabs.Content value="login" className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  Admin Email
+                </label>
+                <input
+                  type="email"
+                  placeholder="admin@example.com"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500 transition-colors"
+                />
+              </div>
+
+              <button
+                onClick={() => loginMutation.mutate()}
+                disabled={loginMutation.isPending}
+                className="w-full mt-2 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                {loginMutation.isPending && <Loader2 className="animate-spin" size={18} />}
+                <span>{loginMutation.isPending ? "Authenticating..." : "Login as Admin"}</span>
+              </button>
+            </Tabs.Content>
+
+            <Tabs.Content value="signup" className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   placeholder="System Administrator"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  style={styles.input}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500 transition-colors"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label>Phone Number</label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  Phone Number
+                </label>
                 <input
                   type="text"
                   placeholder="9876543210"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
-                  style={styles.input}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500 transition-colors"
                 />
               </div>
-            </>
-          )}
 
-          <div style={styles.formGroup}>
-            <label>Admin Email</label>
-            <input
-              type="email"
-              placeholder="admin@example.com"
-              value={loginEmail}
-              onChange={(e) => setLoginEmail(e.target.value)}
-              style={styles.input}
-            />
-          </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  Admin Email
+                </label>
+                <input
+                  type="email"
+                  placeholder="admin@example.com"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500 transition-colors"
+                />
+              </div>
 
-          <div style={styles.formGroup}>
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="••••••••"
-              value={loginPassword}
-              onChange={(e) => setLoginPassword(e.target.value)}
-              style={styles.input}
-            />
-          </div>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-1">
+                  Password
+                </label>
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  value={loginPassword}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-teal-500 transition-colors"
+                />
+              </div>
 
-          {authMode === "login" ? (
-            <button
-              onClick={() => loginMutation.mutate()}
-              disabled={loginMutation.isPending}
-              style={styles.primaryBtn}
-            >
-              {loginMutation.isPending ? "Authenticating..." : "Login as Admin"}
-            </button>
-          ) : (
-            <button
-              onClick={() => signupMutation.mutate()}
-              disabled={signupMutation.isPending || !fullName || !loginEmail || !loginPassword}
-              style={{ ...styles.primaryBtn, backgroundColor: "#319795" }}
-            >
-              {signupMutation.isPending ? "Registering..." : "Create Admin Account"}
-            </button>
-          )}
+              <button
+                onClick={() => signupMutation.mutate()}
+                disabled={signupMutation.isPending || !fullName || !loginEmail || !loginPassword}
+                className="w-full mt-2 bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                {signupMutation.isPending && <Loader2 className="animate-spin" size={18} />}
+                <span>{signupMutation.isPending ? "Registering..." : "Create Admin Account"}</span>
+              </button>
+            </Tabs.Content>
+          </Tabs.Root>
         </div>
       ) : (
-        /* Admin Dashboard: Create Vendor & List Vendors */
-        <div style={styles.dashboardGrid}>
-          {/* Create Vendor Form */}
-          <div style={styles.card}>
-            <div style={styles.cardHeader}>
-              <UserPlus color="#319795" size={24} />
-              <h3>Onboard New Vendor</h3>
+        /* Admin Dashboard Grid */
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Create Vendor Card */}
+          <div className="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-6 shadow-xl">
+            <div className="flex items-center gap-3 mb-6 pb-3 border-b border-slate-700/60">
+              <UserPlus className="text-teal-400" size={24} />
+              <h3 className="text-lg font-bold text-white">Onboard New Vendor</h3>
             </div>
 
-            {successMsg && <div style={styles.successAlert}>{successMsg}</div>}
+            {successMsg && (
+              <div className="bg-emerald-900/40 border border-emerald-500/50 text-emerald-200 text-sm p-3 rounded-lg mb-4">
+                {successMsg}
+              </div>
+            )}
 
-            <div style={styles.formGrid}>
-              <div style={styles.formGroup}>
-                <label>Shop / Restaurant Name</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                  Shop Name
+                </label>
                 <input
                   type="text"
                   placeholder="Tasty Bytes Kitchen"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  style={styles.input}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label>Owner Name</label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                  Owner Name
+                </label>
                 <input
                   type="text"
                   placeholder="John Doe"
                   value={ownerName}
                   onChange={(e) => setOwnerName(e.target.value)}
-                  style={styles.input}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label>Vendor Email</label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                  Vendor Email
+                </label>
                 <input
                   type="email"
                   placeholder="vendor@restaurant.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  style={styles.input}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label>Initial Password</label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                  Initial Password
+                </label>
                 <input
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  style={styles.input}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label>Phone Number</label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                  Phone Number
+                </label>
                 <input
                   type="text"
                   placeholder="9876543210"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
-                  style={styles.input}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                 />
               </div>
 
-              <div style={styles.formGroup}>
-                <label>Pincode</label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                  Pincode
+                </label>
                 <input
                   type="text"
                   placeholder="700001"
                   value={pincode}
                   onChange={(e) => setPincode(e.target.value)}
-                  style={styles.input}
+                  className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500"
                 />
               </div>
             </div>
 
-            <div style={styles.formGroup}>
-              <label>Full Address</label>
+            <div className="mb-6">
+              <label className="block text-xs font-semibold text-slate-300 uppercase mb-1">
+                Full Address
+              </label>
               <textarea
                 placeholder="123 Food Street, Downtown"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                style={{ ...styles.input, height: "80px", resize: "none" }}
+                className="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-teal-500 h-20 resize-none"
               />
             </div>
 
             <button
               onClick={() => createVendorMutation.mutate()}
               disabled={createVendorMutation.isPending || !name || !email}
-              style={{ ...styles.primaryBtn, backgroundColor: "#319795" }}
+              className="w-full bg-teal-600 hover:bg-teal-700 disabled:opacity-50 text-white font-semibold py-3 rounded-lg transition-colors flex items-center justify-center gap-2"
             >
-              {createVendorMutation.isPending ? "Creating Vendor..." : "Register Vendor"}
+              {createVendorMutation.isPending && <Loader2 className="animate-spin" size={18} />}
+              <span>{createVendorMutation.isPending ? "Registering Vendor..." : "Register Vendor"}</span>
             </button>
           </div>
 
-          {/* Vendors List */}
-          <div style={styles.card}>
-            <div style={styles.cardHeader}>
-              <Store color="#805AD5" size={24} />
-              <h3>Active Onboarded Vendors</h3>
+          {/* Active Vendors List */}
+          <div className="bg-slate-800/80 border border-slate-700/60 rounded-2xl p-6 shadow-xl">
+            <div className="flex items-center gap-3 mb-6 pb-3 border-b border-slate-700/60">
+              <Store className="text-purple-400" size={24} />
+              <h3 className="text-lg font-bold text-white">Active Onboarded Vendors</h3>
             </div>
 
             {vendorsLoading ? (
-              <p style={{ color: "#94A3B8" }}>Loading vendors list...</p>
+              <div className="flex items-center gap-2 text-slate-400">
+                <Loader2 className="animate-spin" size={18} />
+                <span>Loading vendors...</span>
+              </div>
             ) : Array.isArray(vendorsList) && vendorsList.length > 0 ? (
-              <div style={styles.vendorList}>
+              <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
                 {vendorsList.map((v: any, idx: number) => (
-                  <div key={v.id || idx} style={styles.vendorItem}>
-                    <div>
-                      <h4 style={{ margin: 0, color: "#F8FAFC" }}>{v.name || "Unnamed Shop"}</h4>
-                      <p style={{ margin: "0.2rem 0", color: "#94A3B8", fontSize: "0.85rem" }}>
-                        Owner: {v.ownerName || "N/A"} | Email: {v.email}
-                      </p>
-                      <span style={{ fontSize: "0.8rem", color: "#CBD5E1" }}>
-                        📍 {v.address || "Address not updated"} ({v.pincode || "No Zip"})
-                      </span>
+                  <div
+                    key={v.id || idx}
+                    className="bg-slate-900/90 border border-slate-700/80 rounded-xl p-4 hover:border-slate-600 transition-colors"
+                  >
+                    <h4 className="font-bold text-white text-base">{v.name || "Unnamed Shop"}</h4>
+                    <p className="text-slate-400 text-xs mt-1">
+                      Owner: <span className="text-slate-200">{v.ownerName || "N/A"}</span> | Email:{" "}
+                      <span className="text-slate-200">{v.email}</span>
+                    </p>
+                    <div className="mt-2 text-xs text-slate-400 flex items-center gap-1">
+                      <span>📍</span>
+                      <span>{v.address || "No address updated"} ({v.pincode || "No zip"})</span>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p style={{ color: "#94A3B8" }}>No vendors created yet.</p>
+              <p className="text-slate-400 text-sm">No active vendors registered yet.</p>
             )}
           </div>
         </div>
@@ -399,137 +451,3 @@ export default function AdminPortal() {
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    minHeight: "100vh",
-    backgroundColor: "#0F172A",
-    color: "#F8FAFC",
-    fontFamily: "var(--font-geist-sans), sans-serif",
-    padding: "2rem",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: "2.5rem",
-    paddingBottom: "1rem",
-    borderBottom: "1px solid #1E293B",
-  },
-  brand: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-  },
-  logoutBtn: {
-    backgroundColor: "#DC2626",
-    color: "#FFF",
-    border: "none",
-    padding: "0.5rem 1rem",
-    borderRadius: "0.5rem",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-  authCard: {
-    maxWidth: "440px",
-    margin: "3rem auto",
-    backgroundColor: "#1E293B",
-    border: "1px solid #334155",
-    borderRadius: "1rem",
-    padding: "2.5rem",
-  },
-  tabContainer: {
-    display: "flex",
-    gap: "1rem",
-    marginBottom: "1.5rem",
-    borderBottom: "1px solid #334155",
-  },
-  tabBtn: {
-    flex: 1,
-    padding: "0.5rem",
-    backgroundColor: "transparent",
-    border: "none",
-    fontWeight: "600",
-    cursor: "pointer",
-    fontSize: "0.95rem",
-  },
-  dashboardGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-    gap: "2rem",
-    maxWidth: "1200px",
-    margin: "0 auto",
-  },
-  card: {
-    backgroundColor: "#1E293B",
-    border: "1px solid #334155",
-    borderRadius: "1rem",
-    padding: "2rem",
-  },
-  cardHeader: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-    marginBottom: "1.5rem",
-  },
-  formGrid: {
-    display: "grid",
-    gridTemplateColumns: "1fr 1fr",
-    gap: "1rem",
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.4rem",
-    marginBottom: "1rem",
-  },
-  input: {
-    backgroundColor: "#0F172A",
-    border: "1px solid #334155",
-    color: "#F8FAFC",
-    borderRadius: "0.5rem",
-    padding: "0.75rem",
-    fontSize: "0.9rem",
-    outline: "none",
-  },
-  primaryBtn: {
-    width: "100%",
-    backgroundColor: "#805AD5",
-    color: "#FFF",
-    border: "none",
-    padding: "0.85rem",
-    borderRadius: "0.5rem",
-    fontWeight: "600",
-    cursor: "pointer",
-    marginTop: "0.5rem",
-  },
-  errorAlert: {
-    backgroundColor: "#7F1D1D",
-    color: "#FECACA",
-    padding: "0.75rem",
-    borderRadius: "0.5rem",
-    marginBottom: "1rem",
-    fontSize: "0.85rem",
-  },
-  successAlert: {
-    backgroundColor: "#064E3B",
-    color: "#A7F3D0",
-    padding: "0.75rem",
-    borderRadius: "0.5rem",
-    marginBottom: "1rem",
-    fontSize: "0.85rem",
-  },
-  vendorList: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
-    maxHeight: "500px",
-    overflowY: "auto",
-  },
-  vendorItem: {
-    backgroundColor: "#0F172A",
-    border: "1px solid #334155",
-    borderRadius: "0.75rem",
-    padding: "1rem",
-  },
-};

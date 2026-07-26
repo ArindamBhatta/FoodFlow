@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store";
@@ -13,171 +12,104 @@ export default function Home() {
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div style={styles.container}>
+    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
       {/* Header / Navbar */}
-      <header style={styles.header}>
-        <div style={styles.logoGroup}>
-          <Utensils style={{ color: "#E53E3E" }} size={28} />
-          <span style={styles.logoText}>FoodFlow</span>
+      <header className="flex justify-between items-center px-8 py-5 border-b border-slate-850 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+        <div className="flex items-center gap-3">
+          <Utensils className="text-red-500" size={28} />
+          <span className="text-xl font-bold tracking-tight text-white">FoodFlow</span>
         </div>
 
-        <div style={styles.navActions}>
-          <Link href="/admin" style={styles.navLink}>
-            <ShieldCheck size={18} color="#805AD5" />
+        <div className="flex items-center gap-4">
+          <button
+            onClick={() => router.push("/admin")}
+            className="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <ShieldCheck className="text-purple-400" size={18} />
             <span>Admin Portal</span>
-          </Link>
+          </button>
 
-          <Link href="/vendor" style={styles.navLink}>
-            <Store size={18} color="#319795" />
+          <button
+            onClick={() => router.push("/vendor")}
+            className="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-white px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors"
+          >
+            <Store className="text-teal-400" size={18} />
             <span>Vendor Portal</span>
-          </Link>
+          </button>
 
-          <button style={styles.cartBtn}>
-            <ShoppingBag size={20} />
+          <button className="relative flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-white font-semibold px-4 py-2 rounded-full border border-slate-700 transition-colors">
+            <ShoppingBag size={18} />
             <span>Cart</span>
             {totalCartCount > 0 && (
-              <span style={styles.badge}>{totalCartCount}</span>
+              <span className="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full ml-1">
+                {totalCartCount}
+              </span>
             )}
           </button>
         </div>
       </header>
 
       {/* Hero Section */}
-      <main style={styles.hero}>
-        <h1 style={styles.title}>
-          Full-Stack <span style={{ color: "#E53E3E" }}>Food Ordering</span> System
+      <main className="max-w-6xl mx-auto px-6 py-16 text-center">
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight text-white mb-4">
+          Full-Stack <span className="text-red-500">Food Ordering</span> System
         </h1>
-        <p style={styles.subtitle}>
-          Powered by Express.js (Port 8001), Drizzle ORM, SQLite, Next.js, Redux Toolkit, & TanStack Query.
+        <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-14 leading-relaxed">
+          Powered by Express.js (Port 8111), Drizzle ORM, SQLite, Next.js, Redux Toolkit, Tailwind CSS & Radix UI.
         </p>
 
-        {/* System Cards */}
-        <div style={styles.cardGrid}>
-          <div style={styles.card}>
-            <Utensils size={32} style={{ color: "#DD6B20" }} />
-            <h3>Customer Portal</h3>
-            <p>Browse vendors, view menus, add items to Redux cart, and place orders.</p>
+        {/* System Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+          <div className="bg-slate-900/80 border border-slate-800 hover:border-slate-700 rounded-2xl p-6 transition-all shadow-lg flex flex-col justify-between">
+            <div>
+              <Utensils className="text-orange-400 mb-4" size={36} />
+              <h3 className="text-xl font-bold text-white mb-2">Customer Portal</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Browse vendors, view menus, add items to Redux cart, and place orders seamlessly.
+              </p>
+            </div>
+            <span className="mt-6 text-xs text-orange-400 font-semibold uppercase tracking-wider">
+              Customer Flow
+            </span>
           </div>
 
           <div
             onClick={() => router.push("/vendor")}
-            style={{ ...styles.card, cursor: "pointer" }}
+            className="bg-slate-900/80 border border-slate-800 hover:border-teal-500/50 rounded-2xl p-6 transition-all shadow-lg cursor-pointer flex flex-col justify-between group"
           >
-            <Store size={32} style={{ color: "#319795" }} />
-            <h3 style={{ color: "#F8FAFC" }}>Vendor Dashboard →</h3>
-            <p style={{ color: "#94A3B8" }}>
-              Log in to edit shop details, phone, address, and manage food items.
-            </p>
+            <div>
+              <Store className="text-teal-400 mb-4 group-hover:scale-110 transition-transform" size={36} />
+              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-teal-300 transition-colors">
+                Vendor Dashboard →
+              </h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Log in to edit shop details, phone, address, and manage food catalog.
+              </p>
+            </div>
+            <span className="mt-6 text-xs text-teal-400 font-semibold uppercase tracking-wider">
+              Vendor Management
+            </span>
           </div>
 
           <div
             onClick={() => router.push("/admin")}
-            style={{ ...styles.card, cursor: "pointer" }}
+            className="bg-slate-900/80 border border-slate-800 hover:border-purple-500/50 rounded-2xl p-6 transition-all shadow-lg cursor-pointer flex flex-col justify-between group"
           >
-            <ShieldCheck size={32} style={{ color: "#805AD5" }} />
-            <h3 style={{ color: "#F8FAFC" }}>Admin Management →</h3>
-            <p style={{ color: "#94A3B8" }}>
-              Log in as Admin to create and onboard new restaurant vendors.
-            </p>
+            <div>
+              <ShieldCheck className="text-purple-400 mb-4 group-hover:scale-110 transition-transform" size={36} />
+              <h3 className="text-xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                Admin Management →
+              </h3>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Log in as Admin to onboard new restaurant vendors and manage administrators.
+              </p>
+            </div>
+            <span className="mt-6 text-xs text-purple-400 font-semibold uppercase tracking-wider">
+              Admin & Onboarding
+            </span>
           </div>
         </div>
       </main>
     </div>
   );
 }
-
-const styles: { [key: string]: React.CSSProperties } = {
-  container: {
-    minHeight: "100vh",
-    backgroundColor: "#0F172A",
-    color: "#F8FAFC",
-    fontFamily: "var(--font-geist-sans), sans-serif",
-  },
-  header: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "1.5rem 3rem",
-    borderBottom: "1px solid #1E293B",
-  },
-  logoGroup: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-  },
-  logoText: {
-    fontSize: "1.5rem",
-    fontWeight: "700",
-    letterSpacing: "-0.5px",
-  },
-  navActions: {
-    display: "flex",
-    alignItems: "center",
-    gap: "1.25rem",
-  },
-  navLink: {
-    display: "flex",
-    alignItems: "center",
-    gap: "0.4rem",
-    color: "#CBD5E1",
-    textDecoration: "none",
-    fontSize: "0.95rem",
-    fontWeight: "500",
-  },
-  cartBtn: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.5rem",
-    backgroundColor: "#1E293B",
-    color: "#F8FAFC",
-    border: "1px solid #334155",
-    padding: "0.6rem 1.2rem",
-    borderRadius: "9999px",
-    cursor: "pointer",
-    fontWeight: "600",
-  },
-  badge: {
-    backgroundColor: "#E53E3E",
-    color: "#FFF",
-    fontSize: "0.75rem",
-    borderRadius: "50%",
-    padding: "0.2rem 0.5rem",
-    marginLeft: "0.25rem",
-  },
-  hero: {
-    maxWidth: "1100px",
-    margin: "0 auto",
-    padding: "4rem 2rem",
-    textAlign: "center",
-  },
-  title: {
-    fontSize: "3rem",
-    fontWeight: "800",
-    marginBottom: "1rem",
-    letterSpacing: "-1px",
-  },
-  subtitle: {
-    fontSize: "1.125rem",
-    color: "#94A3B8",
-    maxWidth: "650px",
-    margin: "0 auto 3.5rem auto",
-    lineHeight: "1.6",
-  },
-  cardGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-    gap: "1.5rem",
-    textAlign: "left",
-  },
-  card: {
-    backgroundColor: "#1E293B",
-    border: "1px solid #334155",
-    borderRadius: "1rem",
-    padding: "2rem",
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
-    height: "100%",
-  },
-};
